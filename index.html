@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FlowReceipt — Green Money Theme</title>
+  <style>
+    :root{
+      --bg0:#06140b;
+      --bg1:#062a14;
+      --cardA:rgba(255,255,255,.07);
+      --cardB:rgba(255,255,255,.10);
+      --stroke:rgba(255,255,255,.14);
+      --text:#ecfff2;
+      --muted:rgba(236,255,242,.70);
+      --good:#62ffb6;
+      --warn:#ffd86b;
+      --bad:#ff6b6b;
+      --gold:#ffd36a;
+      --shadow:0 18px 70px rgba(0,0,0,.42);
+      --r:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial;
+      color:var(--text);
+
+      /* Money-green vibe background (no image required) */
+      background:
+        radial-gradient(1100px 700px at 15% 0%, rgba(92,255,140,.22), transparent 60%),
+        radial-gradient(900px 600px at 85% 10%, rgba(255,211,106,.16), transparent 55%),
+        radial-gradient(900px 600px at 45% 85%, rgba(0,180,90,.20), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    /* sparkles */
+    .sparkles::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 10% 20%, rgba(255,255,255,.10), transparent 18%),
+        radial-gradient(circle at 80% 30%, rgba(255,211,106,.12), transparent 16%),
+        radial-gradient(circle at 35% 75%, rgba(98,255,182,.10), transparent 18%),
+        radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%),
+        radial-gradient(circle at 55% 45%, rgba(255,211,106,.08), transparent 18%);
+      filter: blur(0.2px);
+      opacity:.85;
+    }
+
+    .wrap{max-width:1100px;margin:0 auto;padding:16px 14px 96px}
+
+    .top{
+      position:sticky; top:0; z-index:5;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(to bottom, rgba(6,20,11,.92), rgba(6,20,11,.65), transparent);
+      padding:12px 0 10px;
+    }
+
+    .brand{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap
+    }
+
+    .logo{
+      display:flex; align-items:center; gap:10px;
+    }
+    .mark{
+      width:38px;height:38px;border-radius:14px;
+      background: linear-gradient(180deg, rgba(98,255,182,.28), rgba(255,211,106,.18));
+      border:1px solid rgba(255,255,255,.16);
+      box-shadow: 0 16px 40px rgba(0,0,0,.30);
+      position:relative;
+      overflow:hidden;
+    }
+    .mark:after{
+      content:"";
+      position:absolute; inset:-30%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.20), transparent 55%);
+      transform: rotate(18deg);
+    }
+
+    h1{margin:0;font-size:18px;letter-spacing:.2px}
+    .sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.11), rgba(255,255,255,.06));
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      box-shadow: 0 12px 35px rgba(0,0,0,.20);
+      font-weight:650;
+    }
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{
+      border-color: rgba(98,255,182,.45);
+      background: linear-gradient(180deg, rgba(98,255,182,.25), rgba(255,255,255,.06));
+    }
+    .btn.gold{
+      border-color: rgba(255,211,106,.45);
+      background: linear-gradient(180deg, rgba(255,211,106,.22), rgba(255,255,255,.06));
+    }
+
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:12px}
+
+    .card{
+      grid-column: span 12;
+      background: linear-gradient(180deg, var(--cardB), var(--cardA));
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .card:before{
+      content:"";
+      position:absolute; inset:0;
+      pointer-events:none;
+      background: radial-gradient(600px 260px at 20% 0%, rgba(98,255,182,.10), transparent 60%),
+                  radial-gradient(600px 260px at 85% 0%, rgba(255,211,106,.09), transparent 60%);
+      opacity:.9;
+    }
+
+    .card .hd{
+      position:relative;
+      padding:14px 14px 10px;
+      display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    }
+    .title{font-size:14px;margin:0}
+    .hint{font-size:12px;color:var(--muted)}
+
+    .card .bd{position:relative; padding:0 14px 14px}
+
+    .chip{
+      display:inline-flex;gap:6px;align-items:center;
+      padding:7px 10px;border-radius:999px;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.12);
+      font-size:12px;color:var(--muted);
+    }
+    .chip b{color:var(--text)}
+
+    .kpis{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+    .kpi{
+      grid-column: span 6;
+      background: rgba(0,0,0,.10);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:12px;
+    }
+    @media(min-width:860px){
+      .kpi{grid-column: span 3;}
+      .card.half{grid-column: span 6;}
+    }
+    .kpi .lab{font-size:12px;color:var(--muted)}
+    .kpi .val{font-size:20px;font-weight:850;margin-top:6px}
+
+    .form{display:grid;grid-template-columns:repeat(12,1fr);gap:10px}
+    .field{grid-column: span 12}
+    @media(min-width:860px){
+      .field.half{grid-column: span 6}
+      .field.third{grid-column: span 4}
+    }
+
+    label{display:block;font-size:12px;color:var(--muted);margin:0 0 6px}
+    input,select,textarea{
+      width:100%;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      color:var(--text);
+      padding:12px 12px;
+      border-radius:16px;
+      outline:none;
+    }
+    textarea{min-height:90px;resize:vertical}
+
+    .tog{display:flex;gap:8px;flex-wrap:wrap}
+    .tog button{
+      flex:1; min-width:150px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      color:var(--text);
+      padding:10px 12px;border-radius:999px;cursor:pointer;
+      font-weight:700;
+    }
+    .tog button.active{
+      border-color: rgba(255,211,106,.55);
+      background: rgba(255,211,106,.16);
+    }
+
+    .list{display:flex;flex-direction:column;gap:10px}
+    .item{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.14);
+      border-radius:18px;
+      padding:12px;
+      display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    }
+    .item .l{min-width:220px}
+    .item .t{font-weight:800}
+    .item .m{font-size:12px;color:var(--muted);margin-top:4px}
+    .item .r{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+
+    .tag{
+      font-size:12px;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+    }
+    .tag.good{border-color:rgba(98,255,182,.40);color:var(--good)}
+    .tag.warn{border-color:rgba(255,216,107,.42);color:var(--warn)}
+    .tag.bad{border-color:rgba(255,107,107,.42);color:var(--bad)}
+
+    .link{
+      color:rgba(255,211,106,.95);
+      cursor:pointer;
+      text-decoration:underline;
+      font-size:12px;
+      font-weight:750;
+    }
+
+    .footerbar{
+      position:fixed;left:0;right:0;bottom:0;z-index:10;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(to top, rgba(6,20,11,.92), rgba(6,20,11,.62), transparent);
+      padding:10px 12px;
+      border-top:1px solid rgba(255,255,255,.10);
+    }
+    .footerbar .row{justify-content:center}
+    .mono{font-variant-numeric:tabular-nums}
+  </style>
+</head>
+<body class="sparkles">
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo">
+          <div class="mark" aria-hidden="true"></div>
+          <div>
+            <h1>FlowReceipt</h1>
+            <div class="sub">Green Money Theme • Client • Job • Advance • Payment • Report</div>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn gold" id="btnExport">Export JSON</button>
+          <button class="btn" id="btnReset">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="hd">
+          <div>
+            <p class="title">Dashboard</p>
+            <div class="hint">এই মাসের ইনকাম, বকেয়া, এডভান্স ব্যালান্স</div>
+          </div>
+          <div class="chip">Today <b id="todayTxt"></b></div>
+        </div>
+        <div class="bd">
+          <div class="kpis">
+            <div class="kpi">
+              <div class="lab">This Month Income</div>
+              <div class="val mono" id="kpiMonthIncome">৳ 0</div>
+            </div>
+            <div class="kpi">
+              <div class="lab">Pending Amount</div>
+              <div class="val mono" id="kpiPending">৳ 0</div>
+            </div>
+            <div class="kpi">
+              <div class="lab">Advance Credit (All Clients)</div>
+              <div class="val mono" id="kpiAdvance">৳ 0</div>
+            </div>
+            <div class="kpi">
+              <div class="lab">Jobs Count</div>
+              <div class="val mono" id="kpiJobs">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card half">
+        <div class="hd">
+          <div>
+            <p class="title">Add Client</p>
+            <div class="hint">ক্লায়েন্ট যুক্ত করুন</div>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="form">
+            <div class="field half">
+              <label>Client Name</label>
+              <input id="cName" placeholder="যেমন: Rahim Traders" />
+            </div>
+            <div class="field half">
+              <label>Phone (optional)</label>
+              <input id="cPhone" placeholder="01XXXXXXXXX" />
+            </div>
+            <div class="field">
+              <label>Note (optional)</label>
+              <input id="cNote" placeholder="কী কাজ, কোন শর্ত..." />
+            </div>
+            <div class="field">
+              <button class="btn primary" id="btnAddClient">Save Client</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card half">
+        <div class="hd">
+          <div>
+            <p class="title">Add Job</p>
+            <div class="hint">Fixed বা Per Piece প্রাইস সাপোর্ট করে</div>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="form">
+            <div class="field">
+              <label>Select Client</label>
+              <select id="jClient"></select>
+            </div>
+            <div class="field">
+              <label>Job Title</label>
+              <input id="jTitle" placeholder="যেমন: Logo Design / Print 200pcs" />
+            </div>
+
+            <div class="field">
+              <label>Price Type</label>
+              <div class="tog">
+                <button type="button" id="btnFixed" class="active">Fixed Price</button>
+                <button type="button" id="btnPiece">Per Piece</button>
+              </div>
+            </div>
+
+            <div class="field half" id="fixedWrap">
+              <label>Price (৳)</label>
+              <input id="jFixedPrice" type="number" min="0" step="1" placeholder="12000" />
+            </div>
+
+            <div class="field half" id="unitWrap" style="display:none">
+              <label>Unit Price (৳)</label>
+              <input id="jUnitPrice" type="number" min="0" step="1" placeholder="50" />
+            </div>
+            <div class="field half" id="qtyWrap" style="display:none">
+              <label>Quantity (pcs)</label>
+              <input id="jQty" type="number" min="0" step="1" placeholder="200" />
+            </div>
+
+            <div class="field half">
+              <label>Start Date</label>
+              <input id="jStart" type="date" />
+            </div>
+            <div class="field half">
+              <label>Payment Due Date</label>
+              <input id="jDue" type="date" />
+            </div>
+
+            <div class="field third">
+              <label>Status</label>
+              <select id="jStatus">
+                <option value="In Progress">In Progress</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Closed">Closed</option>
+              </select>
+            </div>
+            <div class="field third">
+              <label>Payment Method (default)</label>
+              <select id="jMethod">
+                <option>Bkash</option><option>Nagad</option><option>Rocket</option><option>Upay</option>
+                <option>Bank Transfer</option><option>Cash</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field third">
+              <label>Total Price (Auto)</label>
+              <input id="jTotalAuto" disabled />
+            </div>
+
+            <div class="field">
+              <button class="btn primary" id="btnAddJob">Save Job</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card half">
+        <div class="hd">
+          <div>
+            <p class="title">Add Advance (Client Wallet)</p>
+            <div class="hint">ক্লায়েন্টের এডভান্স/ক্রেডিট যোগ হবে</div>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="form">
+            <div class="field">
+              <label>Select Client</label>
+              <select id="aClient"></select>
+            </div>
+            <div class="field half">
+              <label>Advance Amount (৳)</label>
+              <input id="aAmount" type="number" min="0" step="1" placeholder="2000" />
+            </div>
+            <div class="field half">
+              <label>Date</label>
+              <input id="aDate" type="date" />
+            </div>
+            <div class="field">
+              <label>Note</label>
+              <input id="aNote" placeholder="যেমন: অর্ডার কনফার্ম" />
+            </div>
+            <div class="field">
+              <button class="btn primary" id="btnAddAdvance">Save Advance</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card half">
+        <div class="hd">
+          <div>
+            <p class="title">Receive Payment (Receipt)</p>
+            <div class="hint">এডভান্স অটো এডজাস্ট + রিসিট + PDF + Share</div>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="form">
+            <div class="field">
+              <label>Select Job</label>
+              <select id="pJob"></select>
+            </div>
+            <div class="field half">
+              <label>Paid Now (৳)</label>
+              <input id="pAmount" type="number" min="0" step="1" placeholder="5000" />
+            </div>
+            <div class="field half">
+              <label>Payment Method</label>
+              <select id="pMethod">
+                <option>Bkash</option><option>Nagad</option><option>Rocket</option><option>Upay</option>
+                <option>Bank Transfer</option><option>Cash</option><option>Other</option>
+              </select>
+            </div>
+            <div class="field half">
+              <label>Txn ID (optional)</label>
+              <input id="pTxn" placeholder="8N7K..." />
+            </div>
+            <div class="field half">
+              <label>Date</label>
+              <input id="pDate" type="date" />
+            </div>
+
+            <div class="field">
+              <label>Use Advance? (Auto)</label>
+              <input id="pAdvanceInfo" disabled />
+              <div class="hint">Job select করলে advance এবং কতটা কাটবে তা দেখাবে</div>
+            </div>
+
+            <div class="field">
+              <label>Note</label>
+              <input id="pNote" placeholder="যেমন: 2nd installment" />
+            </div>
+
+            <div class="field">
+              <button class="btn primary" id="btnReceive">Create Receipt</button>
+              <span class="hint">রিসিট তৈরি হলে নিচে Share/PDF বাটন পাবেন</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd">
+          <div>
+            <p class="title">Jobs List</p>
+            <div class="hint">Paid / Partial / Pending স্ট্যাটাস</div>
+          </div>
+          <div class="chip">Filter <b id="filterTxt">All</b></div>
+        </div>
+        <div class="bd">
+          <div class="row" style="margin-bottom:10px">
+            <button class="btn" data-filter="all">All</button>
+            <button class="btn" data-filter="pending">Pending</button>
+            <button class="btn" data-filter="partial">Partial</button>
+            <button class="btn" data-filter="paid">Paid</button>
+          </div>
+          <div class="list" id="jobsList"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="hd">
+          <div>
+            <p class="title">Receipts</p>
+            <div class="hint">Share / PDF / Copy</div>
+          </div>
+        </div>
+        <div class="bd">
+          <div class="list" id="receiptList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footerbar">
+    <div class="row">
+      <span class="chip">Tip <b>PDF:</b> PDF চাপুন → Print → Save as PDF</span>
+      <span class="chip">Tip <b>Share:</b> Share চাপুন → WhatsApp/Email</span>
+    </div>
+  </div>
+
+<script>
+/* ---------- Storage ---------- */
+const KEY="flowreceipt_green_v1";
+function loadDB(){ try{ return JSON.parse(localStorage.getItem(KEY)) || null }catch(e){ return null } }
+function saveDB(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+function uid(prefix="id"){ return prefix+"_"+Math.random().toString(16).slice(2)+Date.now().toString(16); }
+function money(n){ n=Number(n||0); return "৳ " + n.toLocaleString("en-US"); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+let db = loadDB();
+if(!db){
+  db = { clients:[], jobs:[], advances:[], payments:[], receipts:[] };
+  saveDB(db);
+}
+
+/* ---------- Helpers ---------- */
+function clientAdvanceBalance(clientId){
+  const adds = db.advances.filter(a=>a.clientId===clientId).reduce((s,a)=>s+Number(a.amount||0),0);
+  const used = db.payments.filter(p=>p.clientId===clientId).reduce((s,p)=>s+Number(p.advanceUsed||0),0);
+  return Math.max(0, adds - used);
+}
+function jobTotalPrice(job){
+  if(job.priceType==="piece") return Number(job.unitPrice||0) * Number(job.qty||0);
+  return Number(job.fixedPrice||0);
+}
+function jobPaidTotal(jobId){
+  return db.payments.filter(p=>p.jobId===jobId).reduce((s,p)=>s+Number(p.amount||0),0);
+}
+function jobAdvanceUsed(jobId){
+  return db.payments.filter(p=>p.jobId===jobId).reduce((s,p)=>s+Number(p.advanceUsed||0),0);
+}
+function jobDue(job){
+  const total = jobTotalPrice(job);
+  const paid = jobPaidTotal(job.id);
+  const advUsed = jobAdvanceUsed(job.id);
+  return Math.max(0, total - (paid + advUsed));
+}
+function jobPayStatus(job){
+  const total = jobTotalPrice(job);
+  const paidAll = jobPaidTotal(job.id) + jobAdvanceUsed(job.id);
+  if(total<=0) return "pending";
+  if(paidAll<=0) return "pending";
+  if(paidAll>=total) return "paid";
+  return "partial";
+}
+function monthIncome(isoMonth){
+  return db.payments.filter(p => (p.date||"").slice(0,7)===isoMonth).reduce((s,p)=>s+Number(p.amount||0),0);
+}
+function pendingAll(){ return db.jobs.reduce((s,j)=>s+jobDue(j),0); }
+function allAdvance(){ return db.clients.reduce((s,c)=>s+clientAdvanceBalance(c.id),0); }
+
+/* ---------- UI Refs ---------- */
+const el = (id)=>document.getElementById(id);
+
+el("todayTxt").textContent = new Date().toLocaleDateString("bn-BD");
+
+const kpiMonthIncome = el("kpiMonthIncome");
+const kpiPending = el("kpiPending");
+const kpiAdvance = el("kpiAdvance");
+const kpiJobs = el("kpiJobs");
+
+const cName=el("cName"), cPhone=el("cPhone"), cNote=el("cNote");
+const btnAddClient=el("btnAddClient");
+
+const jClient=el("jClient"), jTitle=el("jTitle");
+const btnFixed=el("btnFixed"), btnPiece=el("btnPiece");
+const fixedWrap=el("fixedWrap"), unitWrap=el("unitWrap"), qtyWrap=el("qtyWrap");
+const jFixedPrice=el("jFixedPrice"), jUnitPrice=el("jUnitPrice"), jQty=el("jQty");
+const jStart=el("jStart"), jDue=el("jDue"), jStatus=el("jStatus"), jMethod=el("jMethod"), jTotalAuto=el("jTotalAuto");
+const btnAddJob=el("btnAddJob");
+
+const aClient=el("aClient"), aAmount=el("aAmount"), aDate=el("aDate"), aNote=el("aNote");
+const btnAddAdvance=el("btnAddAdvance");
+
+const pJob=el("pJob"), pAmount=el("pAmount"), pMethod=el("pMethod"), pTxn=el("pTxn"), pDate=el("pDate"), pAdvanceInfo=el("pAdvanceInfo"), pNote=el("pNote");
+const btnReceive=el("btnReceive");
+
+const jobsList=el("jobsList");
+const receiptList=el("receiptList");
+const filterTxt=el("filterTxt");
+const btnReset=el("btnReset");
+const btnExport=el("btnExport");
+
+/* ---------- State ---------- */
+let priceType="fixed";
+let filter="all";
+
+/* ---------- Defaults ---------- */
+jStart.value = todayISO();
+jDue.value = todayISO();
+aDate.value = todayISO();
+pDate.value = todayISO();
+
+/* ---------- Render ---------- */
+function escapeHtml(str){
+  return String(str||"").replace(/[&<>"']/g, s=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[s]));
+}
+
+function renderSelectors(){
+  const optsClients = db.clients.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("");
+  jClient.innerHTML = optsClients || `<option value="">(Add a client first)</option>`;
+  aClient.innerHTML = optsClients || `<option value="">(Add a client first)</option>`;
+
+  const jobOptions = db.jobs.map(j=>{
+    const c = db.clients.find(x=>x.id===j.clientId);
+    const total = jobTotalPrice(j);
+    const due = jobDue(j);
+    return `<option value="${j.id}">${escapeHtml(c?c.name:"Client")} — ${escapeHtml(j.title)} (${money(total)} | Due ${money(due)})</option>`;
+  }).join("");
+  pJob.innerHTML = jobOptions || `<option value="">(Add a job first)</option>`;
+}
+
+function renderKPIs(){
+  const ym = new Date().toISOString().slice(0,7);
+  kpiMonthIncome.textContent = money(monthIncome(ym));
+  kpiPending.textContent = money(pendingAll());
+  kpiAdvance.textContent = money(allAdvance());
+  kpiJobs.textContent = String(db.jobs.length);
+}
+
+function renderJobs(){
+  let list = db.jobs.slice().sort((a,b)=>(a.dueDate||"").localeCompare(b.dueDate||""));
+  if(filter!=="all") list = list.filter(j=>jobPayStatus(j)===filter);
+  filterTxt.textContent = filter==="all" ? "All" : filter[0].toUpperCase()+filter.slice(1);
+
+  if(list.length===0){
+    jobsList.innerHTML = `<div class="item"><div class="l"><div class="t">No jobs</div><div class="m">এখনো কোনো কাজ নেই</div></div></div>`;
+    return;
+  }
+
+  jobsList.innerHTML = list.map(j=>{
+    const c = db.clients.find(x=>x.id===j.clientId);
+    const total = jobTotalPrice(j);
+    const due = jobDue(j);
+    const status = jobPayStatus(j);
+    const tagClass = status==="paid" ? "good" : status==="partial" ? "warn" : "bad";
+    const tagText = status==="paid" ? "Paid" : status==="partial" ? "Partial" : "Pending";
+    const priceLine = j.priceType==="piece"
+      ? `Per Piece: ৳${Number(j.unitPrice||0)} × ${Number(j.qty||0)} pcs`
+      : `Fixed: ৳${Number(j.fixedPrice||0)}`;
+
+    return `
+      <div class="item">
+        <div class="l">
+          <div class="t">${escapeHtml(c?c.name:"Client")} • ${escapeHtml(j.title)}</div>
+          <div class="m">${escapeHtml(priceLine)} • Due Date: ${escapeHtml(j.dueDate||"-")} • Status: ${escapeHtml(j.status||"-")}</div>
+        </div>
+        <div class="r">
+          <span class="tag ${tagClass}">${tagText}</span>
+          <span class="tag mono">Total ${money(total)}</span>
+          <span class="tag mono">Due ${money(due)}</span>
+          <span class="link" onclick="deleteJob('${j.id}')">Delete</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderReceipts(){
+  const list = db.receipts.slice().sort((a,b)=>(b.createdAt||"").localeCompare(a.createdAt||"")).slice(0,14);
+  if(list.length===0){
+    receiptList.innerHTML = `<div class="item"><div class="l"><div class="t">No receipts</div><div class="m">পেমেন্ট নিলেই রিসিট তৈরি হবে</div></div></div>`;
+    return;
+  }
+
+  receiptList.innerHTML = list.map(r=>{
+    const c = db.clients.find(x=>x.id===r.clientId);
+    const j = db.jobs.find(x=>x.id===r.jobId);
+    return `
+      <div class="item">
+        <div class="l">
+          <div class="t">Receipt #${escapeHtml(r.receiptNo)}</div>
+          <div class="m">${escapeHtml(c?c.name:"Client")} • ${escapeHtml(j?j.title:"Job")} • ${escapeHtml(r.date)} • ${escapeHtml(r.method)} ${r.txnId?("• Txn: "+escapeHtml(r.txnId)):""}</div>
+        </div>
+        <div class="r">
+          <span class="tag mono">Paid ${money(r.paidNow)}</span>
+          <span class="tag mono">Adv ${money(r.advanceUsed)}</span>
+          <span class="tag mono">Due ${money(r.remainingDue)}</span>
+          <span class="link" onclick="shareReceipt('${r.id}')">Share</span>
+          <span class="link" onclick="printReceipt('${r.id}')">PDF</span>
+          <span class="link" onclick="copyReceipt('${r.id}')">Copy</span>
+          <span class="link" onclick="deleteReceipt('${r.id}')">Delete</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderAll(){
+  renderSelectors();
+  renderKPIs();
+  renderJobs();
+  renderReceipts();
+  updateTotalAuto();
+  updateAdvancePreview();
+}
+
+/* ---------- Price UI ---------- */
+function setPriceType(t){
+  priceType=t;
+  btnFixed.classList.toggle("active", t==="fixed");
+  btnPiece.classList.toggle("active", t==="piece");
+  fixedWrap.style.display = t==="fixed" ? "block" : "none";
+  unitWrap.style.display = t==="piece" ? "block" : "none";
+  qtyWrap.style.display  = t==="piece" ? "block" : "none";
+  updateTotalAuto();
+}
+
+function updateTotalAuto(){
+  let total=0;
+  if(priceType==="fixed") total = Number(jFixedPrice.value||0);
+  else total = Number(jUnitPrice.value||0) * Number(jQty.value||0);
+  jTotalAuto.value = money(total);
+}
+
+/* ---------- Advance preview ---------- */
+function updateAdvancePreview(){
+  const jobId = pJob.value;
+  const job = db.jobs.find(x=>x.id===jobId);
+  if(!job){ pAdvanceInfo.value="—"; return; }
+  const bal = clientAdvanceBalance(job.clientId);
+  const due = jobDue(job);
+  const willUse = Math.min(bal, due);
+  pAdvanceInfo.value = `Client Advance: ${money(bal)} • Will auto use up to: ${money(willUse)}`;
+}
+
+/* ---------- Actions ---------- */
+btnAddClient.addEventListener("click", ()=>{
+  const name = (cName.value||"").trim();
+  if(!name){ alert("Client name দিন"); return; }
+  db.clients.push({ id:uid("c"), name, phone:(cPhone.value||"").trim(), note:(cNote.value||"").trim(), createdAt:new Date().toISOString() });
+  saveDB(db);
+  cName.value=""; cPhone.value=""; cNote.value="";
+  renderAll();
+});
+
+btnFixed.addEventListener("click", ()=>setPriceType("fixed"));
+btnPiece.addEventListener("click", ()=>setPriceType("piece"));
+[jFixedPrice,jUnitPrice,jQty].forEach(x=>x.addEventListener("input", updateTotalAuto));
+
+btnAddJob.addEventListener("click", ()=>{
+  const clientId = jClient.value;
+  if(!clientId){ alert("Client নির্বাচন করুন"); return; }
+  const title = (jTitle.value||"").trim();
+  if(!title){ alert("Job title দিন"); return; }
+
+  let fixedPrice=0, unitPrice=0, qty=0;
+  if(priceType==="fixed"){
+    fixedPrice = Number(jFixedPrice.value||0);
+    if(fixedPrice<=0){ alert("Fixed price দিন"); return; }
+  }else{
+    unitPrice = Number(jUnitPrice.value||0);
+    qty = Number(jQty.value||0);
+    if(unitPrice<=0 || qty<=0){ alert("Unit price এবং Quantity দিন"); return; }
+  }
+
+  db.jobs.push({
+    id:uid("j"),
+    clientId,
+    title,
+    priceType,
+    fixedPrice,
+    unitPrice,
+    qty,
+    startDate: jStart.value || todayISO(),
+    dueDate: jDue.value || todayISO(),
+    status: jStatus.value || "In Progress",
+    methodDefault: jMethod.value || "Bkash",
+    createdAt: new Date().toISOString()
+  });
+  saveDB(db);
+
+  jTitle.value="";
+  jFixedPrice.value=""; jUnitPrice.value=""; jQty.value="";
+  setPriceType("fixed");
+  renderAll();
+});
+
+btnAddAdvance.addEventListener("click", ()=>{
+  const clientId = aClient.value;
+  if(!clientId){ alert("Client নির্বাচন করুন"); return; }
+  const amount = Number(aAmount.value||0);
+  if(amount<=0){ alert("Advance amount দিন"); return; }
+  db.advances.push({
+    id:uid("a"),
+    clientId,
+    amount,
+    date: aDate.value || todayISO(),
+    note: (aNote.value||"").trim(),
+    createdAt: new Date().toISOString()
+  });
+  saveDB(db);
+  aAmount.value=""; aNote.value="";
+  renderAll();
+});
+
+pJob.addEventListener("change", ()=>{
+  const job = db.jobs.find(x=>x.id===pJob.value);
+  if(job) pMethod.value = job.methodDefault || "Bkash";
+  updateAdvancePreview();
+});
+
+btnReceive.addEventListener("click", ()=>{
+  const jobId = pJob.value;
+  const job = db.jobs.find(x=>x.id===jobId);
+  if(!job){ alert("Job নির্বাচন করুন"); return; }
+
+  const paidNow = Number(pAmount.value||0);
+  if(paidNow<0){ alert("Paid amount সঠিক দিন"); return; }
+
+  const total = jobTotalPrice(job);
+  const dueBefore = jobDue(job);
+  const bal = clientAdvanceBalance(job.clientId);
+
+  // auto advance use up to dueBefore
+  const advanceUsed = Math.min(bal, dueBefore);
+
+  db.payments.push({
+    id: uid("p"),
+    clientId: job.clientId,
+    jobId,
+    amount: paidNow,
+    method: pMethod.value || "Bkash",
+    txnId: (pTxn.value||"").trim(),
+    date: pDate.value || todayISO(),
+    note: (pNote.value||"").trim(),
+    advanceUsed,
+    createdAt: new Date().toISOString()
+  });
+
+  const remainingDue = Math.max(0, dueBefore - (advanceUsed + paidNow));
+  const receiptNo = String(db.receipts.length + 1).padStart(5,"0");
+
+  db.receipts.push({
+    id: uid("r"),
+    receiptNo,
+    clientId: job.clientId,
+    jobId,
+    date: pDate.value || todayISO(),
+    method: pMethod.value || "Bkash",
+    txnId: (pTxn.value||"").trim(),
+    paidNow,
+    advanceUsed,
+    totalPrice: total,
+    remainingDue,
+    note: (pNote.value||"").trim(),
+    createdAt: new Date().toISOString()
+  });
+
+  if(remainingDue===0) job.status = "Closed";
+
+  saveDB(db);
+  pAmount.value=""; pTxn.value=""; pNote.value="";
+  renderAll();
+});
+
+document.querySelectorAll("[data-filter]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    filter = b.getAttribute("data-filter");
+    renderJobs();
+  });
+});
+
+btnReset.addEventListener("click", ()=>{
+  const ok = confirm("সব ডাটা মুছে যাবে। নিশ্চিত?");
+  if(!ok) return;
+  localStorage.removeItem(KEY);
+  db = { clients:[], jobs:[], advances:[], payments:[], receipts:[] };
+  saveDB(db);
+  renderAll();
+});
+
+btnExport.addEventListener("click", ()=>{
+  const data = JSON.stringify(db,null,2);
+  navigator.clipboard.writeText(data).then(()=>alert("Export JSON copied ✅"));
+});
+
+/* ---------- Receipt actions ---------- */
+function buildReceiptText(r){
+  const c = db.clients.find(x=>x.id===r.clientId);
+  const j = db.jobs.find(x=>x.id===r.jobId);
+  return `Receipt #${r.receiptNo}
+Client: ${c?c.name:""}
+Job: ${j?j.title:""}
+Date: ${r.date}
+Method: ${r.method}${r.txnId?(" | Txn: "+r.txnId):""}
+Total: ${money(r.totalPrice)}
+Advance Used: ${money(r.advanceUsed)}
+Paid Now: ${money(r.paidNow)}
+Remaining Due: ${money(r.remainingDue)}
+Note: ${r.note||""}`;
+}
+
+async function shareReceipt(rid){
+  const r = db.receipts.find(x=>x.id===rid);
+  if(!r) return;
+  const text = buildReceiptText(r);
+
+  if(navigator.share){
+    try{
+      await navigator.share({ title:`Receipt #${r.receiptNo}`, text });
+      return;
+    }catch(e){}
+  }
+  const url = "https://wa.me/?text=" + encodeURIComponent(text);
+  window.open(url, "_blank");
+}
+
+function copyReceipt(rid){
+  const r = db.receipts.find(x=>x.id===rid);
+  if(!r) return;
+  navigator.clipboard.writeText(buildReceiptText(r)).then(()=>alert("Receipt copied ✅"));
+}
+
+function printReceipt(rid){
+  const r = db.receipts.find(x=>x.id===rid);
+  if(!r) return;
+  const c = db.clients.find(x=>x.id===r.clientId);
+  const j = db.jobs.find(x=>x.id===r.jobId);
+
+  const html = `
+  <html><head><meta charset="utf-8">
+  <title>Receipt #${r.receiptNo}</title>
+  <style>
+    body{font-family:Arial;padding:18px}
+    .box{border:1px solid #ddd;border-radius:12px;padding:16px;max-width:520px}
+    h2{margin:0 0 10px}
+    .row{display:flex;justify-content:space-between;margin:6px 0}
+    .muted{color:#555}
+    hr{border:none;border-top:1px solid #eee;margin:12px 0}
+  </style>
+  </head><body>
+    <div class="box">
+      <h2>Receipt #${r.receiptNo}</h2>
+      <div class="row"><div class="muted">Client</div><div>${(c?c.name:"")}</div></div>
+      <div class="row"><div class="muted">Job</div><div>${(j?j.title:"")}</div></div>
+      <div class="row"><div class="muted">Date</div><div>${r.date}</div></div>
+      <div class="row"><div class="muted">Method</div><div>${r.method} ${r.txnId?(" / "+r.txnId):""}</div></div>
+      <hr/>
+      <div class="row"><div class="muted">Total</div><div>${money(r.totalPrice)}</div></div>
+      <div class="row"><div class="muted">Advance Used</div><div>${money(r.advanceUsed)}</div></div>
+      <div class="row"><div class="muted">Paid Now</div><div>${money(r.paidNow)}</div></div>
+      <div class="row"><div class="muted">Remaining Due</div><div>${money(r.remainingDue)}</div></div>
+      <hr/>
+      <div class="muted">Note</div>
+      <div>${(r.note||"")}</div>
+    </div>
+    <script>window.print();<\/script>
+  </body></html>`;
+
+  const w = window.open("", "_blank");
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+}
+
+function deleteReceipt(rid){
+  const ok = confirm("Receipt ডিলিট করবেন?");
+  if(!ok) return;
+  db.receipts = db.receipts.filter(r=>r.id!==rid);
+  saveDB(db);
+  renderAll();
+}
+
+function deleteJob(jobId){
+  const ok = confirm("এই Job ডিলিট করবেন?");
+  if(!ok) return;
+  db.jobs = db.jobs.filter(j=>j.id!==jobId);
+  saveDB(db);
+  renderAll();
+}
+
+/* ---------- Start ---------- */
+renderAll();
+updateAdvancePreview();
+</script>
+</body>
+</html>
